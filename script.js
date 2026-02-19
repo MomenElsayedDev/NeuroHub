@@ -4,8 +4,20 @@
  */
 const AiriaEngine = {
   vault: JSON.parse(localStorage.getItem("airia_vault_pro")) || [
-    { id: "AR-901", name: "Google Cloud Master SLA", value: 1250000, agent: "Legal-A1", status: "Verified" },
-    { id: "AR-902", name: "NVIDIA H100 GPU Lease", value: 450000, agent: "Finance-X", status: "Audited" },
+    {
+      id: "AR-901",
+      name: "Google Cloud Master SLA",
+      value: 1250000,
+      agent: "Legal-A1",
+      status: "Verified",
+    },
+    {
+      id: "AR-902",
+      name: "NVIDIA H100 GPU Lease",
+      value: 450000,
+      agent: "Finance-X",
+      status: "Audited",
+    },
   ],
 
   init() {
@@ -19,7 +31,8 @@ const AiriaEngine = {
     const timestamp = new Date().toLocaleTimeString();
     const div = document.createElement("div");
     div.textContent = `[${timestamp}] ${msg}`;
-    div.className = type === "error" ? "err" : type === "success" ? "success" : "";
+    div.className =
+      type === "error" ? "err" : type === "success" ? "success" : "";
     feed.appendChild(div);
     feed.scrollTop = feed.scrollHeight;
   },
@@ -33,7 +46,10 @@ const AiriaEngine = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message }),
       });
-      this.logToTerminal(`Slack-Agent: Message sent -> "${message}"`, "success");
+      this.logToTerminal(
+        `Slack-Agent: Message sent -> "${message}"`,
+        "success",
+      );
     } catch (err) {
       this.logToTerminal(`Slack-Agent Error: ${err.message}`, "error");
     }
@@ -41,7 +57,9 @@ const AiriaEngine = {
 
   async hitlRiskCheck(item) {
     if (parseFloat(item.value) > HITL_THRESHOLD) {
-      return confirm(`High-value asset detected: $${parseFloat(item.value).toLocaleString()}. Approve ingestion manually?`);
+      return confirm(
+        `High-value asset detected: $${parseFloat(item.value).toLocaleString()}. Approve ingestion manually?`,
+      );
     }
     return true;
   },
@@ -76,27 +94,50 @@ const AiriaEngine = {
       body.appendChild(tr);
     });
 
-    document.getElementById("valCounter").textContent = "$" + totalWealth.toLocaleString();
+    document.getElementById("valCounter").textContent =
+      "$" + totalWealth.toLocaleString();
     localStorage.setItem("airia_vault_pro", JSON.stringify(this.vault));
 
     // ACTIVE AGENTS
     const totalAgents = this.vault.length;
-    const verifiedAgents = this.vault.filter(i => i.status === "Verified").length;
-    document.getElementById("activeAgentsCount").textContent = `${verifiedAgents}/${totalAgents}`;
-    document.getElementById("agentsStatus").textContent = verifiedAgents === totalAgents ? "Healthy Pulse" : "Attention Required";
+    const verifiedAgents = this.vault.filter(
+      (i) => i.status === "Verified",
+    ).length;
+    document.getElementById("activeAgentsCount").textContent =
+      `${verifiedAgents}/${totalAgents}`;
+    document.getElementById("agentsStatus").textContent =
+      verifiedAgents === totalAgents ? "Healthy Pulse" : "Attention Required";
 
     // RISK INDEX
-    const hasHighRisk = this.vault.some(i => parseFloat(i.value) > HITL_THRESHOLD);
-    document.getElementById("riskIndex").textContent = hasHighRisk ? "High" : "Nominal";
-    document.getElementById("riskStatus").textContent = hasHighRisk ? "Critical asset detected" : "No critical breaches";
+    const hasHighRisk = this.vault.some(
+      (i) => parseFloat(i.value) > HITL_THRESHOLD,
+    );
+    document.getElementById("riskIndex").textContent = hasHighRisk
+      ? "High"
+      : "Nominal";
+    document.getElementById("riskStatus").textContent = hasHighRisk
+      ? "Critical asset detected"
+      : "No critical breaches";
 
     // Attach buttons
-    document.querySelectorAll(".editBtn").forEach(btn => btn.onclick = () => this.edit(parseInt(btn.dataset.idx)));
-    document.querySelectorAll(".deleteBtn").forEach(btn => btn.onclick = () => this.delete(parseInt(btn.dataset.idx)));
+    document
+      .querySelectorAll(".editBtn")
+      .forEach(
+        (btn) => (btn.onclick = () => this.edit(parseInt(btn.dataset.idx))),
+      );
+    document
+      .querySelectorAll(".deleteBtn")
+      .forEach(
+        (btn) => (btn.onclick = () => this.delete(parseInt(btn.dataset.idx))),
+      );
   },
 
   delete(index) {
-    if (confirm("Are you sure you want to remove this asset from the secure vault?")) {
+    if (
+      confirm(
+        "Are you sure you want to remove this asset from the secure vault?",
+      )
+    ) {
       this.logToTerminal(`Archiving record: ${this.vault[index].name}...`);
       this.vault.splice(index, 1);
       this.refreshUI();
@@ -139,7 +180,7 @@ const AiriaEngine = {
       if (step.msg.includes("Slack-Agent")) {
         await this.sendSlackNotification("Workflow completed successfully.");
       }
-      await new Promise(r => setTimeout(r, 700));
+      await new Promise((r) => setTimeout(r, 700));
     }
 
     // Auto-fill with random discovery
@@ -149,34 +190,52 @@ const AiriaEngine = {
       { name: "Tesla Giga-Factory SOW", val: 900000 },
       { name: "Microsoft Azure Node Cluster", val: 320000 },
     ];
-    const randomMatch = discoveryPool[Math.floor(Math.random() * discoveryPool.length)];
+    const randomMatch =
+      discoveryPool[Math.floor(Math.random() * discoveryPool.length)];
 
     document.getElementById("inpName").value = randomMatch.name;
     document.getElementById("inpVal").value = randomMatch.val;
     document.getElementById("commitBtn").disabled = false;
 
     pStatus.textContent = "Discovery Successful!";
-    this.logToTerminal("Workflow Completed. Metadata Structuring Success.", "success");
+    this.logToTerminal(
+      "Workflow Completed. Metadata Structuring Success.",
+      "success",
+    );
   },
 };
 
 function nav(pageId, btn) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+  document
+    .querySelectorAll(".page")
+    .forEach((p) => p.classList.remove("active"));
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((b) => b.classList.remove("active"));
   document.getElementById(pageId).classList.add("active");
   btn.classList.add("active");
 
   const headers = {
     dash: ["Intelligence Hub", "Real-time multi-agent orchestration monitor."],
-    vault: ["Secure Asset Vault", "Persistent storage for AI-verified contracts."],
+    vault: [
+      "Secure Asset Vault",
+      "Persistent storage for AI-verified contracts.",
+    ],
     fleet: ["Multi-Agent Fleet", "Control and monitor specialized AI units."],
-    integrations: ["External Workflows", "Manage Slack, Discord, and SMTP webhooks."],
-    settings: ["Core Configuration", "Adjust platform security and API parameters."],
+    integrations: [
+      "External Workflows",
+      "Manage Slack, Discord, and SMTP webhooks.",
+    ],
+    settings: [
+      "Core Configuration",
+      "Adjust platform security and API parameters.",
+    ],
   };
   document.getElementById("pageTitle").textContent = headers[pageId][0];
   document.getElementById("pageDesc").textContent = headers[pageId][1];
 
-  document.getElementById("addBtn").style.display = pageId === "settings" || pageId === "integrations" ? "none" : "flex";
+  document.getElementById("addBtn").style.display =
+    pageId === "settings" || pageId === "integrations" ? "none" : "flex";
 }
 
 function toggleTheme() {
@@ -205,17 +264,26 @@ document.getElementById("updateBtn").addEventListener("click", () => {
     return;
   }
 
-  if (assetValue > HITL_THRESHOLD && !confirm(`⚠️ High value ($${assetValue}). Confirm update?`)) {
+  if (
+    assetValue > HITL_THRESHOLD &&
+    !confirm(`⚠️ High value ($${assetValue}). Confirm update?`)
+  ) {
     log.textContent += `❌ Update for ${assetName} cancelled.\n`;
     return;
   }
 
-  const idx = AiriaEngine.vault.findIndex(item => item.name === assetName);
+  const idx = AiriaEngine.vault.findIndex((item) => item.name === assetName);
   if (idx !== -1) {
     AiriaEngine.vault[idx].value = assetValue;
     log.textContent += `✅ ${assetName} updated with value $${assetValue}.\n`;
   } else {
-    const newAsset = { id: "AR-" + (Math.floor(Math.random() * 900) + 100), name: assetName, value: assetValue, agent: "Manual-AI", status: "Verified" };
+    const newAsset = {
+      id: "AR-" + (Math.floor(Math.random() * 900) + 100),
+      name: assetName,
+      value: assetValue,
+      agent: "Manual-AI",
+      status: "Verified",
+    };
     AiriaEngine.vault.unshift(newAsset);
     log.textContent += `🆕 ${assetName} added with value $${assetValue}.\n`;
   }
@@ -224,7 +292,9 @@ document.getElementById("updateBtn").addEventListener("click", () => {
 
 function searchVault(query) {
   const filtered = AiriaEngine.vault.filter(
-    i => i.name.toLowerCase().includes(query.toLowerCase()) || i.id.toLowerCase().includes(query.toLowerCase())
+    (i) =>
+      i.name.toLowerCase().includes(query.toLowerCase()) ||
+      i.id.toLowerCase().includes(query.toLowerCase()),
   );
   AiriaEngine.refreshUI(filtered);
 }
@@ -242,6 +312,25 @@ function closeModal() {
   document.getElementById("aiActionBox").style.pointerEvents = "auto";
   document.getElementById("aiActionBox").style.opacity = "1";
 }
+// JavaScript for dynamic stats
+let startTime = Date.now();
+
+function updateSystemStats() {
+  const elapsed = Date.now() - startTime;
+  const seconds = Math.floor(elapsed / 1000) % 60;
+  const minutes = Math.floor(elapsed / (1000 * 60)) % 60;
+  const hours = Math.floor(elapsed / (1000 * 60 * 60));
+
+  document.getElementById("uptime").textContent =
+    `SYSTEM UPTIME: ${hours}h ${minutes}m ${seconds}s`;
+
+  const activeAgents = AiriaEngine.vault.length;
+  document.getElementById("activeThreads").textContent =
+    `ACTIVE THREADS: ${activeAgents} AGENTS`;
+}
+
+setInterval(updateSystemStats, 1000);
+updateSystemStats(); // تحديث فوري عند التحميل
 
 function startMultiAgentWorkflow() {
   AiriaEngine.runWorkflow();
@@ -265,18 +354,27 @@ document.getElementById("ingestForm").onsubmit = async function (e) {
 
   const approved = await AiriaEngine.hitlRiskCheck(newItem);
   if (!approved) {
-    AiriaEngine.logToTerminal(`Ingestion cancelled by HITL for ${newItem.name}.`, "error");
+    AiriaEngine.logToTerminal(
+      `Ingestion cancelled by HITL for ${newItem.name}.`,
+      "error",
+    );
     return;
   }
 
   if (idx === "") {
     AiriaEngine.vault.unshift(newItem);
-    AiriaEngine.logToTerminal(`New Entry: ${newItem.name} ingested successfully.`);
-    await AiriaEngine.sendSlackNotification(`New asset ingested: ${newItem.name} ($${newItem.value})`);
+    AiriaEngine.logToTerminal(
+      `New Entry: ${newItem.name} ingested successfully.`,
+    );
+    await AiriaEngine.sendSlackNotification(
+      `New asset ingested: ${newItem.name} ($${newItem.value})`,
+    );
   } else {
     AiriaEngine.vault[idx] = newItem;
     AiriaEngine.logToTerminal(`Record Updated: ${newItem.name}.`);
-    await AiriaEngine.sendSlackNotification(`Asset updated: ${newItem.name} ($${newItem.value})`);
+    await AiriaEngine.sendSlackNotification(
+      `Asset updated: ${newItem.name} ($${newItem.value})`,
+    );
   }
 
   closeModal();
