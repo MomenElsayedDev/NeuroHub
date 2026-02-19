@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroHub | Multi-Agent Orchestration OS</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside>
+      <div class="logo-area">
+        <i class="fas fa-brain"></i>
+        <span>NeuroHub</span>
+      </div>
+      <div class="nav-group">
+        <button class="nav-item active" onclick="nav('dash', this)">
+          <i class="fas fa-chart-pie"></i> Intelligence Hub
+        </button>
+        <button class="nav-item" onclick="nav('vault', this)">
+          <i class="fas fa-shield-halved"></i> Global Vault (CRUD)
+        </button>
+        <button class="nav-item" onclick="nav('fleet', this)">
+          <i class="fas fa-robot"></i> Agent Fleet
+        </button>
+        <button class="nav-item" onclick="nav('integrations', this)">
+          <i class="fas fa-plug-circle-bolt"></i> Integrations
+        </button>
+        <button class="nav-item" onclick="nav('settings', this)">
+          <i class="fas fa-gears"></i> Core Settings
+        </button>
+      </div>
+      <div
+        style="
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+        "
+      >
+        <p style="font-size: 0.65rem; color: #94a3b8">SYSTEM UPTIME: 99.98%</p>
+        <p style="font-size: 0.65rem; color: #94a3b8">
+          ACTIVE THREADS: 14 AGENTS
+        </p>
+      </div>
+    </aside>
+
+    <main>
+      <div class="top-bar">
+        <div>
+          <h1 id="pageTitle" style="font-size: 1.8rem; font-weight: 800">
+            Intelligence Hub
+          </h1>
+          <p id="pageDesc" style="color: var(--text-muted); font-size: 0.9rem">
+            Real-time multi-agent orchestration monitor.
+          </p>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center">
+          <button
+            class="btn-circle"
+            onclick="toggleTheme()"
+            title="Switch Theme"
+          >
+            <i class="fas fa-moon" id="themeIcon"></i>
+          </button>
+          <div style="position: relative; width: 250px">
+            <i
+              class="fas fa-search"
+              style="
+                position: absolute;
+                left: 15px;
+                top: 14px;
+                color: var(--text-muted);
+              "
+            ></i>
+            <input
+              type="text"
+              placeholder="Global Scan..."
+              onkeyup="searchVault(this.value)"
+              style="
+                width: 100%;
+                padding: 12px 12px 12px 40px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--bg-card);
+                color: var(--text-main);
+              "
+            />
+          </div>
+          <button id="addBtn" class="btn btn-primary" onclick="openModal()">
+            <i class="fas fa-plus"></i> Ingest Document
+          </button>
+        </div>
+      </div>
+
+      <section id="dash" class="page active">
+        <div class="grid-3">
+          <div class="card">
+            <p
+              style="
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: var(--text-muted);
+              "
+            >
+              TOTAL ASSET VALUE
+            </p>
+            <h2 id="valCounter" style="font-size: 2.2rem; margin-top: 5px">
+              $0.00
+            </h2>
+            <span
+              style="color: var(--success); font-size: 0.8rem; font-weight: 700"
+            >
+              <i class="fas fa-arrow-up"></i> +12% this month
+            </span>
+          </div>
+          <div class="card">
+            <p
+              style="
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: var(--text-muted);
+              "
+            >
+              ACTIVE AGENTS
+            </p>
+
+            <h2
+              id="activeAgentsCount"
+              style="font-size: 2.2rem; margin-top: 5px"
+            >
+              0/0
+            </h2>
+
+            <span
+              id="agentsStatus"
+              style="color: var(--info); font-size: 0.8rem; font-weight: 700"
+            >
+              --
+            </span>
+          </div>
+
+          <div class="card">
+            <p
+              style="
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: var(--text-muted);
+              "
+            >
+              RISK INDEX
+            </p>
+
+            <h2
+              id="riskIndex"
+              style="font-size: 2.2rem; margin-top: 5px; color: var(--warning)"
+            >
+              --
+            </h2>
+
+            <span
+              id="riskStatus"
+              style="color: var(--text-muted); font-size: 0.8rem"
+            >
+              --
+            </span>
+          </div>
+        </div>
+
+        <!-- Orchestrator Communication Feed -->
+        <div class="card">
+          <h3 style="margin-bottom: 1.5rem">
+            <i class="fas fa-terminal" style="margin-right: 10px"></i>
+            Orchestrator Communication Feed
+          </h3>
+          <div class="terminal" id="terminalFeed">
+            <b>[System]</b> Booting AiriaGuard Kernel v4.2.0...<br />
+            <b>[System]</b> Establishing Secure Webhook Handshakes...<br />
+            <b>[System]</b> Multi-Agent Fleet initialized. Awaiting ingestion
+            tasks.
+          </div>
+        </div>
+
+        <!-- HITL Manual Asset Update Card -->
+        <div class="card manual-update">
+          <h3>Manual Asset Update</h3>
+          <div>
+            <label for="assetName">Asset Name:</label>
+            <input
+              type="text"
+              id="assetName"
+              placeholder="Example: Tesla Giga-Factory SOW"
+            />
+
+            <label for="assetValue">Asset Value ($):</label>
+            <input
+              type="number"
+              id="assetValue"
+              placeholder="Example: 150000000"
+            />
+
+            <button id="updateBtn">Update Asset</button>
+          </div>
+          <div id="log"></div>
+        </div>
+      </section>
+
+      <section id="vault" class="page">
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ref ID</th>
+                  <th>Entity Name</th>
+                  <th>Valuation</th>
+                  <th>Lead Agent</th>
+                  <th>Security Status</th>
+                  <th>Operations</th>
+                </tr>
+              </thead>
+              <tbody id="vaultBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="fleet" class="page">
+        <div class="grid-3">
+          <div class="card" style="text-align: center">
+            <i
+              class="fas fa-gavel"
+              style="font-size: 3rem; color: var(--primary)"
+            ></i>
+            <h3>Legal-Agent 1</h3>
+            <p
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin: 10px 0;
+              "
+            >
+              NLP Document Parsing
+            </p>
+            <span class="badge bg-legal">ACTIVE</span>
+          </div>
+          <div class="card" style="text-align: center">
+            <i
+              class="fas fa-coins"
+              style="font-size: 3rem; color: var(--success)"
+            ></i>
+            <h3>Finance-Agent</h3>
+            <p
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin: 10px 0;
+              "
+            >
+              ROI & Budget Analysis
+            </p>
+            <span class="badge bg-fin">ACTIVE</span>
+          </div>
+          <div class="card" style="text-align: center">
+            <i
+              class="fas fa-shield-virus"
+              style="font-size: 3rem; color: var(--danger)"
+            ></i>
+            <h3>Risk-Agent</h3>
+            <p
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin: 10px 0;
+              "
+            >
+              Anomaly Detection
+            </p>
+            <span class="badge bg-risk">STANDBY</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="integrations" class="page">
+        <div class="card" style="max-width: 600px">
+          <h3>Connected Workflows</h3>
+          <div
+            style="
+              margin-top: 1.5rem;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 1rem;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              margin-bottom: 1rem;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 15px">
+              <i
+                class="fab fa-slack"
+                style="font-size: 2rem; color: #4a154b"
+              ></i>
+              <div>
+                <b>Slack Notification Bot</b>
+                <p style="font-size: 0.75rem; color: var(--text-muted)">
+                  Post updates to #contracts
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="padding: 8px 16px">
+              Connected
+            </button>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 1rem;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 15px">
+              <i
+                class="fas fa-envelope"
+                style="font-size: 2rem; color: var(--info)"
+              ></i>
+              <div>
+                <b>SMTP Relay Agent</b>
+                <p style="font-size: 0.75rem; color: var(--text-muted)">
+                  Direct email reporting
+                </p>
+              </div>
+            </div>
+            <button
+              class="btn"
+              style="background: var(--accent-bg); padding: 8px 16px"
+            >
+              Configure
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="card" style="max-width: 600px">
+          <h3>Platform Configuration</h3>
+          <div style="margin-top: 1.5rem">
+            <label
+              style="
+                display: block;
+                font-size: 0.8rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+              "
+              >AIRIA API KEY (PRO)</label
+            >
+            <input
+              type="password"
+              value="********************************"
+              style="
+                width: 100%;
+                padding: 12px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--bg-app);
+                color: var(--text-main);
+              "
+            />
+          </div>
+          <div style="margin-top: 1rem">
+            <label
+              style="
+                display: block;
+                font-size: 0.8rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+              "
+              >ORCHESTRATOR MODEL</label
+            >
+            <select
+              style="
+                width: 100%;
+                padding: 12px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--bg-app);
+                color: var(--text-main);
+              "
+            >
+              <option>Airia-Orch-Alpha-V4</option>
+              <option>Gemini-1.5-Pro-Airia</option>
+            </select>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="overlay" id="modalOverlay">
+      <div class="modal animate__animated animate__zoomIn">
+        <h3>Autonomous Document Ingestion</h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+          "
+        >
+          The orchestrator will parse and delegate this task to specialized
+          agents.
+        </p>
+
+        <div class="progress-container" id="pContainer">
+          <div class="progress-label">
+            <span id="pStatus">Delegating to Agents...</span>
+            <span id="pPercent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="pFill"></div>
+          </div>
+        </div>
+
+        <form id="ingestForm">
+          <input type="hidden" id="editIndex" />
+          <div style="margin-bottom: 1rem">
+            <label
+              style="
+                display: block;
+                font-weight: 700;
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+              "
+              >Entity Name</label
+            >
+            <input
+              type="text"
+              id="inpName"
+              required
+              placeholder="e.g. Amazon AWS SOW"
+              style="
+                width: 100%;
+                padding: 12px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--bg-app);
+                color: var(--text-main);
+              "
+            />
+          </div>
+          <div style="margin-bottom: 1.5rem">
+            <label
+              style="
+                display: block;
+                font-weight: 700;
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+              "
+              >Contract Valuation (USD)</label
+            >
+            <input
+              type="number"
+              id="inpVal"
+              required
+              placeholder="50000"
+              style="
+                width: 100%;
+                padding: 12px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--bg-app);
+                color: var(--text-main);
+              "
+            />
+          </div>
+
+          <div
+            id="aiActionBox"
+            style="
+              background: var(--primary);
+              color: white;
+              padding: 1.2rem;
+              border-radius: 18px;
+              text-align: center;
+              cursor: pointer;
+              margin-bottom: 1.5rem;
+              box-shadow: 0 4px 15px var(--primary-glow);
+            "
+            onclick="startMultiAgentWorkflow()"
+          >
+            <i class="fas fa-wand-sparkles" style="margin-right: 10px"></i>
+            <b>Trigger Discovery Agent</b>
+            <p style="font-size: 0.7rem; opacity: 0.9; margin-top: 5px">
+              Uses Airia Discovery NLP to auto-fill metadata
+            </p>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px">
+            <button type="button" class="btn" onclick="closeModal()">
+              Abort
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="commitBtn"
+              disabled
+            >
+              Commit to Ledger
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
