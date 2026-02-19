@@ -330,7 +330,7 @@ function updateSystemStats() {
 }
 
 setInterval(updateSystemStats, 1000);
-updateSystemStats(); // تحديث فوري عند التحميل
+updateSystemStats();
 
 function startMultiAgentWorkflow() {
   AiriaEngine.runWorkflow();
